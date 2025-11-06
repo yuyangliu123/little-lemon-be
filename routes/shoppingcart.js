@@ -13,7 +13,7 @@ const { User, RefreshToken, Meal, ShoppingCart } = require('../model/models');
 const { jwtDecode } = require('jwt-decode');
 
 const { string } = require('yup');
-const redis = require('redis');
+// const redis = require('redis');
 const { promisify } = require('util');
 const { log } = require('console');
 const { updateCartState } = require('../utils/updateCartState');
@@ -22,28 +22,28 @@ const { findInitialShoppingCart } = require('../utils/findInitialShoppingCart');
 const { unAuthMergeCart } = require('../utils/unAuthMergeCart');
 
 // 创建Redis客户端
-const redisClient = redis.createClient({
-	host: process.env.REDIS_HOST || 'localhost',
-	port: process.env.REDIS_PORT || 6379,
-});
+// const redisClient = redis.createClient({
+// 	host: process.env.REDIS_HOST || 'localhost',
+// 	port: process.env.REDIS_PORT || 6379,
+// });
 
-redisClient.connect();
-// 添加连接事件监听
-redisClient.on('connect', () => {
-	console.log('Redis client connected');
-});
+// redisClient.connect();
+// // 添加连接事件监听
+// redisClient.on('connect', () => {
+// 	console.log('Redis client connected');
+// });
 
-redisClient.on('error', (err) => {
-	console.error('Redis client error:', err);
-});
+// redisClient.on('error', (err) => {
+// 	console.error('Redis client error:', err);
+// });
 
-redisClient.on('end', () => {
-	console.log('Redis client disconnected');
-});
-// 将Redis命令转换为Promise形式
-const getAsync = redisClient.get.bind(redisClient);
-const setAsync = redisClient.set.bind(redisClient);
-const delAsync = redisClient.del.bind(redisClient);
+// redisClient.on('end', () => {
+// 	console.log('Redis client disconnected');
+// });
+// // 将Redis命令转换为Promise形式
+// const getAsync = redisClient.get.bind(redisClient);
+// const setAsync = redisClient.set.bind(redisClient);
+// const delAsync = redisClient.del.bind(redisClient);
 console.log("App listen at port 5000");
 //set sign of cookie
 

@@ -14,7 +14,7 @@ const { jwtDecode } = require('jwt-decode');
 
 const { string } = require('yup');
 const authenticate = require('../middleware/authenticate');
-const redis = require('redis');
+// const redis = require('redis');
 const { promisify } = require('util');
 const { log } = require('console');
 const { updateCartState } = require('../utils/updateCartState');
@@ -23,29 +23,29 @@ const { findInitialShoppingCart } = require('../utils/findInitialShoppingCart');
 const { unAuthMergeCart } = require('../utils/unAuthMergeCart');
 const semiAuth = require('../middleware/semiAuth');
 
-// 创建Redis客户端
-const redisClient = redis.createClient({
-	host: process.env.REDIS_HOST || 'localhost',
-	port: process.env.REDIS_PORT || 6379,
-});
+// // 创建Redis客户端
+// const redisClient = redis.createClient({
+// 	host: process.env.REDIS_HOST || 'localhost',
+// 	port: process.env.REDIS_PORT || 6379,
+// });
 
-redisClient.connect();
-// 添加连接事件监听
-redisClient.on('connect', () => {
-	console.log('Redis client connected');
-});
+// redisClient.connect();
+// // 添加连接事件监听
+// redisClient.on('connect', () => {
+// 	console.log('Redis client connected');
+// });
 
-redisClient.on('error', (err) => {
-	console.error('Redis client error:', err);
-});
+// redisClient.on('error', (err) => {
+// 	console.error('Redis client error:', err);
+// });
 
-redisClient.on('end', () => {
-	console.log('Redis client disconnected');
-});
-// 将Redis命令转换为Promise形式
-const getAsync = redisClient.get.bind(redisClient);
-const setAsync = redisClient.set.bind(redisClient);
-const delAsync = redisClient.del.bind(redisClient);
+// redisClient.on('end', () => {
+// 	console.log('Redis client disconnected');
+// });
+// // 将Redis命令转换为Promise形式
+// const getAsync = redisClient.get.bind(redisClient);
+// const setAsync = redisClient.set.bind(redisClient);
+// const delAsync = redisClient.del.bind(redisClient);
 console.log("App listen at port 5000");
 //set sign of cookie
 
@@ -78,14 +78,14 @@ api.get("/api", async (req, res) => {
 	const cacheKey = `meals:page:${page}:limit:${limit}:sort:${sort}`;
 
 	try {
-		// 2. 嘗試從 Redis 讀取快取
-		const cachedData = await redisClient.get(cacheKey);
-		if (cachedData) {
-			console.log('Cache hit for /api');
-			return res.status(201).json(JSON.parse(cachedData));
-		}
+		// // 2. 嘗試從 Redis 讀取快取
+		// const cachedData = await redisClient.get(cacheKey);
+		// if (cachedData) {
+		// 	console.log('Cache hit for /api');
+		// 	return res.status(201).json(JSON.parse(cachedData));
+		// }
 
-		console.log('Cache miss for /api. Querying MongoDB...');
+		// console.log('Cache miss for /api. Querying MongoDB...');
 
 		let sortedData;
 		switch (sort) {
@@ -105,7 +105,7 @@ api.get("/api", async (req, res) => {
 		const result = { "category": category, "data": sortedData };
 
 		// 3. 將資料寫入 Redis 快取，設定過期時間(TTL:60分鐘)
-		await setAsync(cacheKey, JSON.stringify(result), { 'EX': 1800 });
+		// await setAsync(cacheKey, JSON.stringify(result), { 'EX': 1800 });
 
 		res.status(201).json(result);
 
@@ -126,18 +126,18 @@ api.get('/order', async (req, res) => {
 	try {
 
 
-		const cachedCategoryData = await getAsync(cacheCategoryKey)
-		const cachedSortData = await getAsync(cacheSortKey)
+		// const cachedCategoryData = await getAsync(cacheCategoryKey)
+		// const cachedSortData = await getAsync(cacheSortKey)
 
-		if (cachedCategoryData && cachedSortData) {
-			console.log('Cache hit for /order');
-			return res.status(200).json({ "category": JSON.parse(cachedCategoryData), "data": JSON.parse(cachedSortData) });
-		}
+		// if (cachedCategoryData && cachedSortData) {
+		// 	console.log('Cache hit for /order');
+		// 	return res.status(200).json({ "category": JSON.parse(cachedCategoryData), "data": JSON.parse(cachedSortData) });
+		// }
 
 
-		console.log('Cache miss for /order. Querying MongoDB...');
+		// console.log('Cache miss for /order. Querying MongoDB...');
 		let category = await Meal.distinct("category")
-		await setAsync(cacheCategoryKey, JSON.stringify(category), { 'EX': 1800 })
+		// await setAsync(cacheCategoryKey, JSON.stringify(category), { 'EX': 1800 })
 		//sort by url
 		let sortedData
 		switch (sort) {
@@ -150,7 +150,7 @@ api.get('/order', async (req, res) => {
 			default:
 				sortedData = await Meal.find({ category: req.query.category })
 		}
-		await setAsync(cacheSortKey, JSON.stringify(sortedData), { 'EX': 1800 })
+		// await setAsync(cacheSortKey, JSON.stringify(sortedData), { 'EX': 1800 })
 
 		res.status(201).json({ "category": category, "data": sortedData });
 	} catch (err) {
