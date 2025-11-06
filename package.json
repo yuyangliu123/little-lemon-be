@@ -13,6 +13,7 @@
     "axios-retry": "^4.5.0",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^4.19.2",
     "express-session": "^1.18.2",
@@ -21,7 +22,7 @@
     "jwt-decode": "^4.0.0",
     "mongoose": "^8.19.2",
     "nodemailer": "^7.0.10",
-    "sharp": "^0.34.4",
+    "sharp": "^0.33.4",
     "uuid": "^3.4.0",
     "yup": "^1.7.1"
   }
