@@ -2,13 +2,9 @@
 // To connect with mongoDB database
 const mongoose = require('./db');
 
-
-
-
 // For backend and express
 const express = require('express');
-const forgotpassword = express();
-const cors = require("cors");
+const forgotpassword = express.Router()
 const bcrypt = require("bcrypt")
 const saltRounds = 10;
 const jwt = require("jsonwebtoken")
@@ -16,19 +12,10 @@ const uuid = require("uuid")
 const nodemailer = require("nodemailer")
 require("dotenv").config()
 const SECRET_KEY = process.env.SECRET_KEY;
-const { string } = require('yup');
+const allowedOrigins=process.env.CORS_ALLOWED_ORIGINS.split(",").map(url=>url.trim())
+const baseUrl = allowedOrigins[1];
 const { Reset, User } = require('../model/models');
-console.log("App listen at port 5000");
-forgotpassword.use(express.json());
-forgotpassword.use(cors());
-forgotpassword.get("/", (req, resp) => {
 
-  resp.send("App is Working");
-  // Can check backend is working or not by
-  // entering http://localhost:5000
-  // If you see App is working means
-  // backend working properly
-});
 const createJwtToken = (email, token, expiresIn) => {
   const payload = {
     email: email,
@@ -74,7 +61,7 @@ forgotpassword.post("/send", async (req, resp) => {
             to: req.body.email,
             subject: "Link To Reset Password",
             text:
-              `http://localhost:3000/resetpassword/?token=${resetToken}`
+            `${baseUrl}/resetpassword/?token=${resetToken}`
           }
           await new Promise((resolve, reject) => {
             transporter.sendMail(mailOptions, (err, resp) => {

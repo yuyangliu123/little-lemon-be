@@ -4,38 +4,16 @@ const mongoose = require('./db');
 //--------------------------------------------------------------------------------------------------//
 // For backend and express
 const express = require('express');
-const cookieParser = require('cookie-parser');
-const app = express();
-const cors = require("cors");
-const { string } = require('yup');
-const { User, ShoppingCart, Fee, Order, CheckoutDraft } = require('../model/models');
+const app = express.Router()
+const { User, Order, CheckoutDraft } = require('../model/models');
 console.log("App listen at port 5000");
-const { jwtDecode } = require('jwt-decode');
-// const { Reservation } = require('./model/models');
 const { getNextOrderNumber } = require('../utils/orderNumberGenerator');
 const { getCheckoutInfo } = require('../utils/CheckoutPage/getCheckoutInfo');
 const { getInitialUserInfo } = require('../utils/getInitialUserInfo');
 const { getShoppingCart } = require('../utils/getShoppingCart');
 const { findInitialShoppingCart } = require('../utils/findInitialShoppingCart');
 const { getCheckoutInfoWithDraft } = require('../utils/CheckoutPage/getCheckoutInfoWithDraft');
-app.use(express.json());
-app.use(cors());
 
-//set sign of cookie
-app.use(cookieParser())
-const corsOptions = {
-	origin: 'http://localhost:3000', // Change to frontend's URL
-	credentials: true, // Allow credentials (cookies, authorization headers, etc.)
-};
-app.use(cors(corsOptions));
-app.get("/", (req, resp) => {
-
-	resp.send("App is Working");
-	// Can check backend is working or not by
-	// entering http://localhost:5000
-	// If you see App is working means
-	// backend working properly
-});
 
 app.post('/checkoutInfo', async (req, res) => {
 	try {
