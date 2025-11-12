@@ -1,11 +1,50 @@
 // server.js
+// server.js (或其他入口文件)
+
+const dotenv = require('dotenv');
+const path = require('path');
+
+// 1. 判斷當前環境
+//    - process.env.NODE_ENV 會由您的 npm 腳本或部署環境來設定。
+//    - 如果沒有設定，預設為 'development'。
+const currentEnv = process.env.NODE_ENV || 'development';
+console.log();
+
+// 2. 根據環境決定要載入的 .env 檔案名稱
+const envFileName = `.env.${currentEnv}`;
+
+console.log(`正在載入環境檔案: ${envFileName}`);
+
+// 3. 載入指定的 .env 檔案
+//    config() 會將檔案中的變數注入到 process.env 中
+const result=dotenv.config({
+    path: path.resolve(__dirname, envFileName)
+});
+if (result.error) {
+    console.error("❌ DOTENV 載入錯誤:", result.error);
+} else {
+    // 輸出所有載入的變數，檢查 CORS_ALLOWED_ORIGINS 是否在其中
+    console.log("✅ DOTENV 成功載入變數:", result.parsed); 
+}
+// ----------------------------------------------------
+// 在這裡之後，您就可以使用 process.env 來存取變數了
+// ----------------------------------------------------
+
+const port = process.env.PORT;
+
+const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS.split(',').map(url => url.trim());
+console.log("生產CORS_ALLOWED_ORIGINS",process.env.CORS_ALLOWED_ORIGINS,"dotenv",dotenv,dotenv.config,port,"allow",allowedOrigins);
+
+// ... 您的 CORS 和其他 Express 邏輯 ...
+
 const express = require('express');
 const helmet = require('helmet');
 const cors = require("cors");
 const corsOptions = {
-    origin: 'http://localhost:3000', // Change to your frontend's URL
+    origin: allowedOrigins, // Change to your frontend's URL
     credentials: true, // Allow credentials (cookies, authorization headers, etc.)
 };
+console.log(corsOptions.origin,"cors來源");
 
 const cookieParser = require('cookie-parser');
 const { v4: uuidv4 } = require('uuid'); // 引入 uuid
@@ -285,5 +324,5 @@ apolloServer.start().then(() => {
     // connect Apollo Server with Express
     apolloServer.applyMiddleware({ app, cors: corsOptions });
 
-    app.listen(5000, () => console.log(`🚀 Server ready at http://localhost:5000${apolloServer.graphqlPath}`));
+    app.listen(port, () => console.log(`🚀 Server ready at http://localhost:${port}${apolloServer.graphqlPath}`));
 });

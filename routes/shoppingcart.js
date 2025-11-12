@@ -3,24 +3,15 @@ const mongoose = require('./db');
 //--------------------------------------------------------------------------------------------------//
 // For backend and express
 const express = require('express');
-const cookieParser = require('cookie-parser');
+const shoppingcart = express.Router()
+const {  Meal, ShoppingCart } = require('../model/models');
 
-const https = require("https")
-const fs = require("fs")
-const shoppingcart = express();
-const cors = require("cors");
-const { User, RefreshToken, Meal, ShoppingCart } = require('../model/models');
-const { jwtDecode } = require('jwt-decode');
 
-const { string } = require('yup');
-// const redis = require('redis');
-const { promisify } = require('util');
-const { log } = require('console');
 const { updateCartState } = require('../utils/updateCartState');
 const { getInitialUserInfo } = require('../utils/getInitialUserInfo');
 const { findInitialShoppingCart } = require('../utils/findInitialShoppingCart');
 const { unAuthMergeCart } = require('../utils/unAuthMergeCart');
-
+// const redis = require('redis');
 // 创建Redis客户端
 // const redisClient = redis.createClient({
 // 	host: process.env.REDIS_HOST || 'localhost',
@@ -44,24 +35,6 @@ const { unAuthMergeCart } = require('../utils/unAuthMergeCart');
 // const getAsync = redisClient.get.bind(redisClient);
 // const setAsync = redisClient.set.bind(redisClient);
 // const delAsync = redisClient.del.bind(redisClient);
-console.log("App listen at port 5000");
-//set sign of cookie
-
-shoppingcart.use(express.json());
-shoppingcart.use(cookieParser())
-const corsOptions = {
-	origin: 'http://localhost:3000', // Change to frontend's URL
-	credentials: true, // Allow credentials (cookies, authorization headers, etc.)
-};
-shoppingcart.use(cors(corsOptions));
-shoppingcart.get("/", (req, resp) => {
-
-	resp.send("App is Working");
-	// Can check backend is working or not by
-	// entering http://localhost:5000
-	// If you see App is working means
-	// backend working properly
-});
 //--------------------------------------------------------------------------------------------------//
 
 

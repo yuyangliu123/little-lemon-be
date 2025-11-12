@@ -7,6 +7,32 @@ mongoose.connect('mongodb+srv://c34klh:wiisport147@little-lemon001.sc2x5oo.mongo
 });
 
 
+const dotenv = require('dotenv');
+const path = require('path');
+
+// 1. 判斷當前環境
+//    - process.env.NODE_ENV 會由您的 npm 腳本或部署環境來設定。
+//    - 如果沒有設定，預設為 'development'。
+const currentEnv = process.env.NODE_ENV || 'development';
+
+// 2. 根據環境決定要載入的 .env 檔案名稱
+const envFileName = `.env.${currentEnv}`;
+
+console.log(`正在載入環境檔案: ${envFileName}`);
+
+// 3. 載入指定的 .env 檔案
+//    config() 會將檔案中的變數注入到 process.env 中
+dotenv.config({
+	path: path.resolve(__dirname,'..', envFileName)
+});
+
+// ----------------------------------------------------
+// 在這裡之後，您就可以使用 process.env 來存取變數了
+// ----------------------------------------------------
+
+const port = process.env.PORT;
+const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS.split(',').map(url => url.trim());
+
 // For backend and express
 const express = require('express');
 const https = require("https")

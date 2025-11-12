@@ -3,26 +3,18 @@ const mongoose = require('./db');
 //--------------------------------------------------------------------------------------------------//
 // For backend and express
 const express = require('express');
-const cookieParser = require('cookie-parser');
 
-const https = require("https")
-const fs = require("fs")
-const api = express();
-const cors = require("cors");
-const { User, RefreshToken, Meal, ShoppingCart } = require('../model/models');
-const { jwtDecode } = require('jwt-decode');
+const api = express.Router()
+const { Meal, ShoppingCart } = require('../model/models');
 
-const { string } = require('yup');
 const authenticate = require('../middleware/authenticate');
-// const redis = require('redis');
-const { promisify } = require('util');
-const { log } = require('console');
+
 const { updateCartState } = require('../utils/updateCartState');
 const { getInitialUserInfo } = require('../utils/getInitialUserInfo');
 const { findInitialShoppingCart } = require('../utils/findInitialShoppingCart');
 const { unAuthMergeCart } = require('../utils/unAuthMergeCart');
 const semiAuth = require('../middleware/semiAuth');
-
+// const redis = require('redis');
 // // 创建Redis客户端
 // const redisClient = redis.createClient({
 // 	host: process.env.REDIS_HOST || 'localhost',
@@ -46,16 +38,9 @@ const semiAuth = require('../middleware/semiAuth');
 // const getAsync = redisClient.get.bind(redisClient);
 // const setAsync = redisClient.set.bind(redisClient);
 // const delAsync = redisClient.del.bind(redisClient);
-console.log("App listen at port 5000");
+// console.log("App listen at port 5000");
 //set sign of cookie
 
-api.use(express.json());
-api.use(cookieParser())
-const corsOptions = {
-	origin: 'http://localhost:3000', // Change to frontend's URL
-	credentials: true, // Allow credentials (cookies, authorization headers, etc.)
-};
-api.use(cors(corsOptions));
 api.get("/", (req, resp) => {
 
 	resp.send("App is Working");

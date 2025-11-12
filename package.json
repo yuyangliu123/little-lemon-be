@@ -2,10 +2,10 @@
   "name": "little-lemon-be",
   "scripts": {
     "start-mongodb": "node routes/setupReplicaSet.js",
-    "init-databases": "concurrently \"nodemon  routes/apiStore.js\" \"nodemon  routes/feeStore.js\"",
-    "start-server": "concurrently \"nodemon routes/apiStore.js\" \"nodemon  routes/feeStore.js\" \"nodemon  server.js\"",
-    "dev": "concurrently \"nodemon  routes/apiStore.js\" \"nodemon  routes/feeStore.js\" \"nodemon  server.js\"",
-    "start": "concurrently \"node  routes/apiStore.js\" \"node routes/feeStore.js\" \"node  server.js\""
+    "init-databases": "concurrently \"nodemon routes/apiStore.js\" \"nodemon routes/feeStore.js\"",
+    "start-server": "concurrently \"nodemon routes/apiStore.js\" \"nodemon routes/feeStore.js\" \"nodemon server.js\"",
+    "dev": "set NODE_ENV=development&& concurrently \"nodemon routes/apiStore.js\" \"nodemon routes/feeStore.js\" \"nodemon server.js\"",
+    "start": "set NODE_ENV=production&& concurrently \"node routes/apiStore.js\" \"node routes/feeStore.js\" \"node server.js\""
   },
   "dependencies": {
     "apollo-server-express": "^3.13.0",

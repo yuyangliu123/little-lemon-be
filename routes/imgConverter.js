@@ -2,22 +2,8 @@
 const express = require('express');
 const sharp = require('sharp');
 const axios = require('axios');
-const imgConverter = express();
-const cors = require("cors");
-require("dotenv").config()
-const SECRET_KEY = process.env.SECRET_KEY;
-const { string } = require('yup');
-const { jwtDecode } = require('jwt-decode');
-const { RefreshToken, User } = require('../model/models');
-console.log("App listen at port 5000");
+const imgConverter = express.Router()
 
-const corsOptions = {
-	origin: 'http://localhost:3000', // Change to frontend's URL
-	credentials: true, // Allow credentials (cookies, authorization headers, etc.)
-};
-imgConverter.use(cors(corsOptions));
-
-imgConverter.use(express.json());
 imgConverter.use((req, res, next) => {
   res.setHeader('Cache-Control', 'public, max-age=604800');
   next();

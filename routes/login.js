@@ -4,37 +4,15 @@ const mongoose = require('./db');
 
 // For backend and express
 const express = require('express');
-const cookieParser = require('cookie-parser');
-const login = express();
-const cors = require("cors");
+const login = express.Router()
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
-const { v4: uuidv4 } = require('uuid');
 require("dotenv").config()
 const SECRET_KEY = process.env.SECRET_KEY;
-const { string } = require('yup');
-const { jwtDecode } = require('jwt-decode');
 const { RefreshToken, User } = require('../model/models');
 const requireRefreshToken = require('../middleware/requireRefreshToken');
 
-console.log("App listen at port 5000");
-login.use(express.json());
 
-//set sign of cookie
-login.use(cookieParser())
-const corsOptions = {
-    origin: 'http://localhost:3000', // Change to frontend's URL
-    credentials: true, // Allow credentials (cookies, authorization headers, etc.)
-};
-login.use(cors(corsOptions));
-login.get("/", (req, resp) => {
-
-    resp.send("App is Working");
-    // Can check backend is working or not by
-    // entering http://localhost:5000
-    // If you see App is working means
-    // backend working properly
-});
 
 const createJwtToken = (fname, lname, email, _id, expiresIn) => {
     const payload = {
