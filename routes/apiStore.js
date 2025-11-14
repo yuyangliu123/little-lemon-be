@@ -41,17 +41,8 @@ const api = express();
 const cors = require("cors");
 const { Meal } = require('../model/models');
 const { string } = require('yup');
-console.log("App listen at port 5000");
 api.use(express.json());
 api.use(cors());
-api.get("/", (req, resp) => {
-
-	resp.send("App is Working");
-	// Can check backend is working or not by
-	// entering http://localhost:5000
-	// If you see App is working means
-	// backend working properly
-});
 //--------------------------------------------------------------------------------------------------//
 
 //--------------------------------------------------------------------------------------------------//

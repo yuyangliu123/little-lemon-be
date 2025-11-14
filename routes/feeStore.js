@@ -43,17 +43,8 @@ const cors = require("cors");
 const { Fee } = require('../model/models');
 const { string } = require('yup');
 const feeConfig = require('../config/feeConfig');
-console.log("App listen at port 5000");
 api.use(express.json());
 api.use(cors());
-api.get("/", (req, resp) => {
-
-    resp.send("App is Working");
-    // Can check backend is working or not by
-    // entering http://localhost:5000
-    // If you see App is working means
-    // backend working properly
-});
 //--------------------------------------------------------------------------------------------------//
 
 //--------------------------------------------------------------------------------------------------//

@@ -5,23 +5,10 @@ const mongoose = require('./db');
 //--------------------------------------------------------------------------------------------------//
 // For backend and express
 const express = require('express');
-const signup = express();
-const cors = require("cors");
+const signup = express.Router()
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
-const { string } = require('yup');
 const { User } = require('../model/models');
-console.log("App listen at port 5000");
-signup.use(express.json());
-signup.use(cors());
-signup.get("/", (req, resp) => {
-
-	resp.send("App is Working");
-	// Can check backend is working or not by
-	// entering http://localhost:5000
-	// If you see App is working means
-	// backend working properly
-});
 //--------------------------------------------------------------------------------------------------//
 
 //--------------------------------------------------------------------------------------------------//
