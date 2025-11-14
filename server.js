@@ -8,7 +8,6 @@ const path = require('path');
 //    - process.env.NODE_ENV 會由您的 npm 腳本或部署環境來設定。
 //    - 如果沒有設定，預設為 'development'。
 const currentEnv = process.env.NODE_ENV || 'development';
-console.log();
 
 // 2. 根據環境決定要載入的 .env 檔案名稱
 const envFileName = `.env.${currentEnv}`;
@@ -33,7 +32,6 @@ if (result.error) {
 const port = process.env.PORT;
 
 const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS.split(',').map(url => url.trim());
-console.log("生產CORS_ALLOWED_ORIGINS",process.env.CORS_ALLOWED_ORIGINS,"dotenv",dotenv,dotenv.config,port,"allow",allowedOrigins);
 
 // ... 您的 CORS 和其他 Express 邏輯 ...
 

@@ -6,7 +6,6 @@ const mongoose = require('./db');
 const express = require('express');
 const app = express.Router()
 const { User, Order, CheckoutDraft } = require('../model/models');
-console.log("App listen at port 5000");
 const { getNextOrderNumber } = require('../utils/orderNumberGenerator');
 const { getCheckoutInfo } = require('../utils/CheckoutPage/getCheckoutInfo');
 const { getInitialUserInfo } = require('../utils/getInitialUserInfo');
