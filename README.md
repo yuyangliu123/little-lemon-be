@@ -72,6 +72,34 @@ Bash
     cd ../packages/little-lemon-be
     npm run start
 
+# 上傳到ec2
+    cd /var/www
+    -- 第一次上傳
+    git clone <your github HTTPS> little-lemon-api
+    cd /var/www/little-lemon-api/little-lemon-be
+    npm install
+
+使用scp上傳.env.production到ec2
+scp -i ~/.ssh/your-key.pem .env.production ec2-user@ec2-107-23-219-13.compute-1.amazonaws.com:/var/www/little-lemon-api/little-lemon-be/
+or
+手動上傳.env.production到ect
+cd /var/www/little-lemon-api/little-lemon-be
+nano .env.production
+ctrl+insert貼上本地的.env.production內容
+ctrl+O儲存 ctrl+X 離開
+ls -a確認.env.production已被儲存
+
+啟動pm2
+cd /var/www/little-lemon-api/little-lemon-be
+pm2 start --name little-lemon-api ecosystem.config.js
+
+確認pm2運行狀態
+pm2 status
+pm2 logs little-lemon-api
+重啟pm2
+pm2 restart little-lemon-api
+
+
 📁 專案結構
 
     little-lemon-be
