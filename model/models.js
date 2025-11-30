@@ -109,6 +109,8 @@ const MealSchema = new mongoose.Schema({
 		default: Date.now,
 	},
 });
+MealSchema.index({ category: 1 }); 
+MealSchema.index({ price: 1 });
 
 const ShoppingCartSchema = new mongoose.Schema({
 	email: {
@@ -419,7 +421,7 @@ const OrderSchema = new mongoose.Schema({
 });
 
 const Reservation = mongoose.models.Reservation || mongoose.model('Reservation', ReserveSchema);
-Reservation.createIndexes()
+// Reservation.createIndexes()
 const RefreshToken = mongoose.models.RefreshToken || mongoose.model('RefreshToken', RefreshSchema);
 const Meal = mongoose.models.Meal || mongoose.model('meal-data', MealSchema);
 const ShoppingCart = mongoose.models.ShoppingCart || mongoose.model('shopping-cart1', ShoppingCartSchema);
@@ -432,7 +434,7 @@ const OrderCounter = mongoose.models.OrderCounter || mongoose.model('order-count
 const Fee = mongoose.models.Fee || mongoose.model('fee', FeeSchema);
 const Order = mongoose.models.Order || mongoose.model('order', OrderSchema);
 
-Meal.collection.createIndex({ category: 1 });
-Meal.collection.createIndex({ price: 1 })
+// Meal.collection.createIndex({ category: 1 });
+// Meal.collection.createIndex({ price: 1 })
 
 module.exports = { Reservation, RefreshToken, Meal, ShoppingCart, CheckoutDraft, User, Reset, OrderCounter, Fee, Order };
