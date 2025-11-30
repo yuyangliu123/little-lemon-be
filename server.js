@@ -23,7 +23,7 @@ if (result.error) {
     console.error("❌ DOTENV 載入錯誤:", result.error);
 } else {
     // 輸出所有載入的變數，檢查 CORS_ALLOWED_ORIGINS 是否在其中
-    console.log("✅ DOTENV 成功載入變數:", result.parsed); 
+    console.log("✅ DOTENV 成功載入變數:", result.parsed);
 }
 // ----------------------------------------------------
 // 在這裡之後，您就可以使用 process.env 來存取變數了
@@ -74,7 +74,7 @@ app.use(cors(corsOptions));
 //set sign of cookie
 app.use(cookieParser());
 
-app.get("/init", async (req, res) => {
+app.get("/api/init", async (req, res) => {
     try {
         if (!req.cookies || !req.cookies.sessionId) {
             // 如果不存在，生成一個新的 sessionId
@@ -158,21 +158,21 @@ app.use((req, res, next) => {
 
 // 定義不需要身份驗證或 CSRF 驗證的公共路由或特殊路由
 const publicRoutes = [
-    '/signup',
-    '/login', // 登入路由，它自己處理認證
-    '/forgotpassword',
-    "/api", //here should split addtocart from /api router
-    "/img",
+    '/api/signup',
+    '/api/login', // 登入路由，它自己處理認證
+    '/api/forgotpassword',
+    "/api/product", //here should split addtocart from /api router
+    "/api/img",
 ];
 
 const semiPublicRoutes = [
-    "/reservation",
-    "/shoppingcart",
+    "/api/reservation",
+    "/api/shoppingcart",
 ]
 
 const privateRoutes = [
-    '/logout',
-    "/checkout",
+    '/api/logout',
+    "/api/checkout",
 ]
 ////////////////////here  驗證authenticateAccessToken會產生req.user =>得到req.user.email 但如果不驗證則沒有 =而/shoppingcart又是公共router
 // 對所有非公共路由應用 authenticateAccessToken
@@ -216,16 +216,16 @@ app.use((req, res, next) => {
 
 
 // --- 路由定義 (保持不變，但移除它們內部重複的 middleware) ---
-app.use("/reservation", reservationRouter);
-app.use('/signup', signupRouter);
-app.use('/login', loginRouter);
-app.use('/logout', logoutRouter);
-app.use('/forgotpassword', forgotpasswordRouter);
-// app.use("/auth", authRouter)
-app.use("/api", apiRouter);
-app.use("/shoppingcart", shoppingcartRouter);
-app.use("/img", imgConverterRouter)
-app.use("/checkout", checkoutRouter)
+app.use("/api/reservation", reservationRouter);
+app.use('/api/signup', signupRouter);
+app.use('/api/login', loginRouter);
+app.use('/api/logout', logoutRouter);
+app.use('/api/forgotpassword', forgotpasswordRouter);
+// app.use("/api/auth", authRouter)
+app.use("/api/product", apiRouter);
+app.use("/api/shoppingcart", shoppingcartRouter);
+app.use("/api/img", imgConverterRouter)
+app.use("/api/checkout", checkoutRouter)
 
 
 

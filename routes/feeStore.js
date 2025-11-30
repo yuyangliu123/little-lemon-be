@@ -1,10 +1,10 @@
 //feeStore.js
 const mongoose = require('mongoose');
-mongoose.connect('mongodb+srv://c34klh:wiisport147@little-lemon001.sc2x5oo.mongodb.net/?retryWrites=true&w=majority&appName=little-lemon001'
+mongoose.connect(`mongodb+srv://c34klh:${process.env.DB_PASSWORD}@little-lemon001.sc2x5oo.mongodb.net/?retryWrites=true&w=majority&appName=little-lemon001`
 ).then(() => {
-  console.log('Connected to little-lemon database');
+    console.log('Connected to little-lemon database');
 }).catch((err) => {
-  console.log(err);
+    console.log(err);
 });
 
 
@@ -24,7 +24,7 @@ console.log(`正在載入環境檔案: ${envFileName}`);
 // 3. 載入指定的 .env 檔案
 //    config() 會將檔案中的變數注入到 process.env 中
 dotenv.config({
-    path: path.resolve(__dirname,'..', envFileName)
+    path: path.resolve(__dirname, '..', envFileName)
 });
 
 // ----------------------------------------------------
@@ -84,13 +84,20 @@ const createData = async () => {
     }
 };
 
-(async () => {
-    createData();
-})();
+mongoose.connection.once('open', async () => {
+    console.log('--- MongoDB 連線已開啟，開始初始化數據與伺服器 ---');
+    try {
+        await createData(); // 確保 Fee.findOne() 在連線成功後執行
 
-api.listen(5002, () => {
-    console.log(`Fee server is running on http://localhost:5002`);
-  });
+        api.listen(5002, () => {
+            console.log(`Fee server is running on http://localhost:5002`);
+        });
+    } catch (error) {
+        console.error('初始化失敗，應用程式退出:', error);
+        process.exit(1);
+    }
+});
+
 //--------------------------------------------------------------------------------------------------//
 
 

@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb+srv://c34klh:wiisport147@little-lemon001.sc2x5oo.mongodb.net/?retryWrites=true&w=majority&appName=little-lemon001'
+mongoose.connect(`mongodb+srv://c34klh:${process.env.DB_PASSWORD}@little-lemon001.sc2x5oo.mongodb.net/?retryWrites=true&w=majority&appName=little-lemon001`
 ).then(() => {
   console.log('Connected to little-lemon database');
 }).catch((err) => {
-  console.log(err);
+  console.log("mongodb connect error",err);
 });
 
 

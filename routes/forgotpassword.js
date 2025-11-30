@@ -13,7 +13,8 @@ const nodemailer = require("nodemailer")
 require("dotenv").config()
 const SECRET_KEY = process.env.SECRET_KEY;
 const allowedOrigins=process.env.CORS_ALLOWED_ORIGINS.split(",").map(url=>url.trim())
-const baseUrl = allowedOrigins[1];
+let baseUrl
+baseUrl=process.env.NODE_ENV==="development"?allowedOrigins[1]:allowedOrigins[0]
 const { Reset, User } = require('../model/models');
 
 const createJwtToken = (email, token, expiresIn) => {

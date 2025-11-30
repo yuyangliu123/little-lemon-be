@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-mongoose.connect('mongodb+srv://c34klh:wiisport147@little-lemon001.sc2x5oo.mongodb.net/?retryWrites=true&w=majority&appName=little-lemon001'
+mongoose.connect(`mongodb+srv://c34klh:${process.env.DB_PASSWORD}@little-lemon001.sc2x5oo.mongodb.net/?retryWrites=true&w=majority&appName=little-lemon001`
 ).then(() => {
 	console.log('Connected to little-lemon database');
 }).catch((err) => {
@@ -23,7 +23,7 @@ console.log(`正在載入環境檔案: ${envFileName}`);
 // 3. 載入指定的 .env 檔案
 //    config() 會將檔案中的變數注入到 process.env 中
 dotenv.config({
-	path: path.resolve(__dirname,'..', envFileName)
+	path: path.resolve(__dirname, '..', envFileName)
 });
 
 // ----------------------------------------------------
@@ -64,74 +64,115 @@ const getHttpsData = (url) => {
 	});
 };
 const createData = async () => {
+	console.log('🏃 正在獲取外部菜單數據...');
 	try {
 		const categoriesResponse = await getHttpsData('https://www.themealdb.com/api/json/v1/1/list.php?c=list');
-		let categoriesData = {};
-		for (let category of categoriesResponse.meals) {
+		const mealsToInsert = [];
+
+		// 使用 Promise.all 加速類別數據獲取
+		const categoryPromises = categoriesResponse.meals.map(async (category) => {
 			const strCategory = category.strCategory;
 			const mealsData = await getHttpsData(`https://www.themealdb.com/api/json/v1/1/filter.php?c=${strCategory}`);
-			categoriesData[strCategory] = mealsData.meals;
-		}
-		Object.entries(categoriesData).map(([category, meals]) => {
-			meals.forEach(mealData => {
-				let meal = new Meal({
-					category: category,
-					strMeal: mealData.strMeal,
-					strMealThumb: mealData.strMealThumb,
-					idMeal: mealData.idMeal,
-					price: Number((Number(mealData.idMeal) / 10000 + Math.random() * 10).toFixed(2))
+
+			if (mealsData.meals) {
+				mealsData.meals.forEach(mealData => {
+					const price = Number((Number(mealData.idMeal) / 10000 + Math.random() * 10).toFixed(2));
+					mealsToInsert.push({
+						category: strCategory,
+						strMeal: mealData.strMeal,
+						strMealThumb: mealData.strMealThumb,
+						idMeal: mealData.idMeal,
+						price: price,
+						Date: new Date(),
+					});
 				});
-				meal.save();
-			});
-		})
+			}
+		});
+
+		await Promise.all(categoryPromises);
+
+		console.log(`✨ 總共收集到 ${mealsToInsert.length} 筆菜單數據。開始批量寫入...`);
+
+		// 使用 insertMany 批量寫入，極大地提高效率
+		await Meal.insertMany(mealsToInsert, { ordered: false });
+
+		console.log('✅ 菜單數據初始化成功！');
 	} catch (err) {
-		console.log("Error: " + err.message);
+		console.error("❌ Error initializing data:", err.message);
 	}
 }
 
-(async () => {
-	const count = await Meal.countDocuments();
-	if (count === 0) {
-		createData();
-	}
-})();
+
 
 
 
 const updateData = async () => {
+	console.log('🔄 正在執行每小時菜單更新...');
 	try {
 		const categoriesResponse = await getHttpsData('https://www.themealdb.com/api/json/v1/1/list.php?c=list');
-		let categoriesData = {};
+		const updatePromises = [];
+
+		// 使用 Promise.all 加速類別數據獲取和更新
 		for (let category of categoriesResponse.meals) {
 			const strCategory = category.strCategory;
 			const mealsData = await getHttpsData(`https://www.themealdb.com/api/json/v1/1/filter.php?c=${strCategory}`);
-			categoriesData[strCategory] = mealsData.meals;
+
+			if (mealsData.meals) {
+				mealsData.meals.forEach(mealData => {
+					const { strMeal, strMealThumb, idMeal } = mealData;
+					// 價格僅在插入時設定
+					const updatePromise = Meal.findOneAndUpdate(
+						{ idMeal },
+						{
+							$set: { category, strMeal, strMealThumb, idMeal },
+							$setOnInsert: {
+								// 每次更新時重新計算一個新價格 
+								price: Number((Number(idMeal) / 10000 + Math.random() * 10).toFixed(2))
+							}
+						},
+						{ upsert: true, new: true, runValidators: true }
+					);
+					updatePromises.push(updatePromise);
+				});
+			}
 		}
-		Object.entries(categoriesData).map(([category, meals]) => {
-			meals.forEach(async mealData => {
-				const { strMeal, strMealThumb, idMeal } = mealData;
-				const price = Number((Number(idMeal) / 10000 + Math.random() * 10).toFixed(2));
-				await Meal.findOneAndUpdate(
-					{ idMeal },
-					{
-						$set: { category, strMeal, strMealThumb, idMeal },
-						$setOnInsert: { price }
-					},
-					{ upsert: true }
-				);
-			});
-		});
+
+		await Promise.all(updatePromises);
+		console.log('✅ 菜單數據更新完成！');
+
 	} catch (err) {
-		console.log("Error: " + err.message);
+		console.error("❌ Error updating data: " + err.message);
 	}
 };
 // Run the update function every hour
-setInterval(updateData, 60 * 60 * 1000);
+mongoose.connection.once('open', async () => {
+	console.log('--- MongoDB 連線已開啟，開始應用程式啟動檢查 ---');
+	try {
+		// 檢查數據是否需要初始化
+		const count = await Meal.countDocuments();
+		if (count === 0) {
+			console.log('🍽️ 菜單集合為空，正在進行初始化...');
+			await createData();
+		} else {
+			console.log(`🍽️ 菜單集合已包含 ${count} 筆數據，跳過初始化。`);
+		}
 
+		// 啟動定時更新任務
+		// 立即執行一次更新，然後每小時執行一次
+		updateData();
+		setInterval(updateData, 60 * 60 * 1000);
 
-api.listen(5001, () => {
-	console.log(`API server is running on http://localhost:5001`);
-})
+		// 啟動 Express 伺服器
+		api.listen(5001, () => {
+			console.log(`🚀 API server is running on http://localhost:5001`);
+		});
+
+	} catch (error) {
+		console.error('❌ 應用程式初始化失敗:', error);
+		process.exit(1);
+	}
+});
+
 
 //--------------------------------------------------------------------------------------------------//
 
